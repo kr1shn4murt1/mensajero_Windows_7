@@ -9,32 +9,44 @@
 
 write-host -----------------------------------------------------------------------------------------------------------------------------
 
-$fechaHoraInicio = Get-Date #Se obtiene la fecha actual
-write-host Hora de inicio del Script $fechaHoraInicio #Se imprime en pantalla la fecha actual
+#Se obtiene la fecha actual
+$fechaHoraInicio = Get-Date
+#Se imprime en pantalla la fecha actual 
+write-host Hora de inicio del Script $fechaHoraInicio 
 
-$log = get-eventlog -log system -source "Application Popup" -newest 1 | format-list -Property ReplacementStrings | Out-String #Se obtiene del visor de eventos el ultimo mensaje net send recibido por el #equipo
+#Se obtiene del visor de eventos el ultimo mensaje net send recibido por el #equipo
+$log = get-eventlog -log system -source "Application Popup" -newest 1 | format-list -Property ReplacementStrings | Out-String 
 
-write-host $fechaHoraInicio # Se imprime la hora de inicio del script
+# Se imprime la hora de inicio del script
+write-host $fechaHoraInicio 
 
-$logfiltrado = $log.substring(150) # Se eliminan los caracteres basura del evento capturado como string
+# Se eliminan los caracteres basura del evento capturado como string
+$logfiltrado = $log.substring(150) 
 $logFinal = $logfiltrado -replace "}"
 
-#Archivo donde están los PC's
-$listado_Computadores = get-content D:\Scripts\Net_Send_Windows_7\Ips_Windows_7.txt # Se obtiene el listado de computadores de un archivo éste archivo tiene en cada linea una ip o nombre de equipo
+#Archivo donde están los PC's, listado de computadores tiene en cada linea una ip o nombre de equipo
+$listado_Computadores = get-content D:\Scripts\Net_Send_Windows_7\Ips_Windows_7.txt 
 
-$ComandoAEjecutar="msg * $logFinal" # Se declara el comando para ejecutarlo mas abajo
+# Se declara el comando para ejecutarlo mas abajo
+$ComandoAEjecutar="msg * $logFinal" 
 write-host Se enviara el mensaje $logFinal
 
-foreach ($computador in $listado_Computadores) #Inicio Ciclo
+#Inicio Ciclo
+foreach ($computador in $listado_Computadores) 
     {
             
     write-host "Se esta enviando el mensaje al equipo $computador"
-   
-    ([WmiClass]"\\$computador\ROOT\CIMV2:Win32_Process").Create($ComandoAEjecutar) # Se crea el proceso #remoto en la maquina, aqui es donde se ve la emulación no se usa net send que está desactivado si no que #se usa el mensajero local de cada equipo pero activado desde un equipo remoto.
-        
-    } # Final ciclo
+
+    # Se crea el proceso #remoto en la maquina, aqui es donde se ve la emulación no se usa net send que está desactivado 
+    # si no que se usa el mensajero local de cada equipo pero activado desde un equipo remoto.   
+    ([WmiClass]"\\$computador\ROOT\CIMV2:Win32_Process").Create($ComandoAEjecutar)
+
+    # Final ciclo
+    } 
 
 $fechaHoraFinal = Get-Date
-write-host Hora de finalizacion del Script $fechaHoraFinal #se imprime la hora de finalizacion del script.
+
+#se imprime la hora de finalizacion del script.
+write-host Hora de finalizacion del Script $fechaHoraFinal 
 write-host ""
 write-host *****************************************************************************************************************************
